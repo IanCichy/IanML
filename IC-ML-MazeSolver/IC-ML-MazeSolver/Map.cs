@@ -74,7 +74,7 @@ namespace IC_ML_MazeSolver
                     else if (map[x, y] == 'G')
                     {
                         btn.Text = "G";
-                        btn.BackColor = System.Drawing.Color.Chartreuse;
+                        btn.BackColor = System.Drawing.Color.Orange;
                     }
 
                     btnCollection[x, y] = btn;

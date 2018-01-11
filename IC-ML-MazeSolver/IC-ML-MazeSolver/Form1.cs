@@ -14,16 +14,16 @@ namespace IC_ML_MazeSolver
     public partial class frmMazeSolver : Form
     {
 
-        public int GOALW = 0, GOALH = 0,
-                STARTW = 0, STARTH = 0;
+        public int GOALW = 0, GOALH = 0, STARTW = 0, STARTH = 0;
         //The map controller
         private Map map;
         //Constant Variables
-        private double gamma = 0.9, eps = 0.9, alpha = 0.9, lambda = 0.9, reductionType = 0;
-        private int count = 0, normalUpdate = 10, rapidUpdate = 4, slowUpdate = 25, maxSteps = 0, episodeNum = 2000;
+        private double gamma = 0.9, epsilon = 0.9, alpha = 0.9, lambda = 0.9, reductionConstant = 10;
+        private int stepCount = 0, maxSteps = 0, totalEpisodesToRun = 2000;
         //HashTables	
         private Dictionary<State, Double> stateAction;
         private Dictionary<State, Double> elgStateAction;
+        private List<Tuple<int,int>> previousLocations = new List<Tuple<int,int>>();
         //GUI Components
         private bool gui = false;
 
@@ -160,24 +160,28 @@ namespace IC_ML_MazeSolver
 
         private void frmMazeSolver_ResizeEnd(object sender, EventArgs e)
         {
-            buildFrame();
+            if(txtFile.Text != null && !txtFile.Text.Equals(""))
+            {
+                buildFrame();
+            }
         }
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-
             runMap();
         }
 
 
         public void runMap()
         {
-            gui = rbtnGUI.Checked;
-
-
+            gui = chkAnimateGUI.Checked;
+            totalEpisodesToRun = int.Parse(txtEpisodesToRun.Text.ToString());
+            reductionConstant = double.Parse(txtReductionConstant.Text.ToString());
+            pgbEpisodeNum.Maximum = totalEpisodesToRun;
 
             if (rbtnQLearning.Checked)
             {
+                    //DO SOMETHING THREAD LIKE
                 Q_Learning(map);
             }
             else if (rbtnSarsa.Checked)
@@ -190,6 +194,7 @@ namespace IC_ML_MazeSolver
             }
 
             finalFrame();
+
         }
 
         /*
@@ -199,29 +204,18 @@ namespace IC_ML_MazeSolver
          * Pre: JFrame, position of agent in map
          * Post: A visible window with the map displayed and the agents position highlighted
          */
-        private void updateFrame(int h, int w)
+        private void updateFrame(int currentY, int currentX, int previousY, int previousX)
         {
-            for (int x = 0; x < map.btnList.GetLength(0); x++)
+            foreach (Tuple<int,int> t in previousLocations)
             {
-                for (int y = 0; y < map.btnList.GetLength(1); y++)
-                {
-                    if (map.btnList[x, y].BackColor == System.Drawing.Color.Red)
-                    {
-                        map.btnList[x, y].BackColor = System.Drawing.Color.Orange;
-                    }
-                }
+                Color c = Color.FromArgb((map.btnList[t.Item1, t.Item2].BackColor.R) != 255 ? 255 : 255,
+                    (map.btnList[t.Item1, t.Item2].BackColor.G) < 220 ? (map.btnList[t.Item1, t.Item2].BackColor.G) + 1 : 220,
+                    (map.btnList[t.Item1, t.Item2].BackColor.B) < 220 ? (map.btnList[t.Item1, t.Item2].BackColor.B) + 1 : 220);
+                map.btnList[t.Item1, t.Item2].BackColor = c;
             }
+            map.btnList[currentY, currentX].BackColor = Color.FromArgb(50,50,50);
 
-            map.btnList[h, w].BackColor = System.Drawing.Color.Red;
             this.Refresh();
-            try
-            {
-                System.Threading.Thread.Sleep(5);
-            }
-            catch (Exception e)
-            {
-
-            }
         }
 
         /*
@@ -247,11 +241,11 @@ namespace IC_ML_MazeSolver
                     }
                     else if (map.btnList[x, y].Text.Equals("S"))
                     {
-                        map.btnList[x, y].BackColor = System.Drawing.Color.Gray;
+                        map.btnList[x, y].BackColor = System.Drawing.Color.Violet;
                     }
                     else if (map.btnList[x, y].Text.Equals("G"))
                     {
-                        map.btnList[x, y].BackColor = System.Drawing.Color.Gray;
+                        map.btnList[x, y].BackColor = System.Drawing.Color.Orange;
                     }
                 }
             }
@@ -270,7 +264,6 @@ namespace IC_ML_MazeSolver
             {
                 for (int y = 0; y < map.btnList.GetLength(1); y++)
                 {
-
                     String s = map.getActions()[x, y].ToString();
                     map.btnList[x, y].Text = s;
 
@@ -292,8 +285,8 @@ namespace IC_ML_MazeSolver
                     }
                 }
             }
-            map.btnList[GOALH, GOALW].BackColor = System.Drawing.Color.Gray;
-            map.btnList[STARTH, STARTW].BackColor = System.Drawing.Color.Gray;
+            map.btnList[GOALH, GOALW].BackColor = System.Drawing.Color.Orange;
+            map.btnList[STARTH, STARTW].BackColor = System.Drawing.Color.Violet;
             this.Refresh();
         }
 
@@ -484,25 +477,24 @@ namespace IC_ML_MazeSolver
         private void Q_Learning(Map M)
         {
             bool icy = false;
-            for (int x = 0; x < episodeNum; x++)
+            for (int currentEpisodeNumber = 0; currentEpisodeNumber < totalEpisodesToRun; currentEpisodeNumber++)
             {
+                if (gui)
+                {
+                    previousLocations.Clear();
+
+                }
+                 lblEpisodeProgress.Text = (currentEpisodeNumber + 1) + "/" + totalEpisodesToRun;
+                 pgbEpisodeNum.Value = currentEpisodeNumber + 1;
+
                 int w = STARTW, h = STARTH;
-                count = 0;
-                char action = 'R';
-                M.getActions()[h, w] = getBestActionByState(h, w);
+                int prew = STARTW, preh = STARTH;
+                stepCount = 0;
 
-                if (reductionType == 1)
-                    eps = doSlowReduction(x, eps);
-                else if (reductionType == 2)
-                    eps = doRapidReduction(x, eps);
-                else
-                    eps = doNormalReduction(x, eps);
+                char stepAction;
+                //M.getActions()[h, w] = getBestActionByState(h, w);
 
-                //if (x % 100 == 0)
-                //{
-                //    Console.WriteLine("TRIALS : " + x);
-                //    printAll();
-                //}
+                epsilon = calcuateReductionConstant(currentEpisodeNumber, epsilon);
 
                 //OPTINAL GUI INTERFACE
                 if (gui)
@@ -510,13 +502,22 @@ namespace IC_ML_MazeSolver
 
                 while ((!(w == GOALW && h == GOALH)))
                 {
-                    count++;
+                    stepCount++;
+
+                    if (gui)
+                    {
+                        previousLocations.Add(new Tuple<int, int>(h, w));
+
+                    }
+
+                    prew = w;
+                    preh = h;
                     //OPTINAL GUI INTERFACE
                     if (gui)
-                        updateFrame(h, w);
+                        updateFrame(h, w, preh, prew);
 
                     //addded step limit
-                    if (eps < 0.1 & count >= maxSteps)
+                    if (stepCount > maxSteps)
                     {
                         break;
                     }
@@ -526,13 +527,13 @@ namespace IC_ML_MazeSolver
                     //Set next action a', chosen E-greedily based on Q(s',a')
                     Random rnd = new Random();
                     double r = rnd.NextDouble();
-                    if (r <= eps)
-                        action = getRandomActionByState(h, w);//choose random action
+                    if (r <= epsilon)
+                        stepAction = getRandomActionByState(h, w);//choose random action
                     else
-                        action = getBestActionByState(h, w);//choose best action
-                    M.getActions()[h, w] = action;
+                        stepAction = getBestActionByState(h, w);//choose best action
+                    M.getActions()[h, w] = stepAction;
 
-                    State s = new State(h, w, action);
+                    State s = new State(h, w, stepAction);
                     double currR = stateAction[s];
 
                     //Take Action A
@@ -649,7 +650,7 @@ namespace IC_ML_MazeSolver
                     char t = getBestActionByState(h, w);
                     double maxR = stateAction[(new State(h, w, t))];
 
-                    double e = currR + alpha * (stepReward + gamma * (maxR - currR));
+                    double e = currR + alpha * (stepReward + lambda * (maxR - currR));
                     stateAction[s] = e;
                 }
             }
@@ -858,49 +859,16 @@ namespace IC_ML_MazeSolver
         //}
 
         /*
-         * Normal Reduction
-         * Pace: 10 episodes
-         * Total: 2000 episodes
+         * Reduction
+         * Pace: reductionConstant episodes
          * Reduce By: (0.9/Math.floor(x/10.0))
          */
-        private double doNormalReduction(int x, Double D)
+        private double calcuateReductionConstant(int x, Double D)
         {
-            if (x >= 1000)
+            if (x >= (totalEpisodesToRun/2))
                 return 0;
-            else if (x % normalUpdate == 0 && x >= normalUpdate)
-                return (0.9 / Math.Floor(x / 10.0));
-            else
-                return D;
-        }
-
-        /*
-         * Rapid Reduction
-         * Pace: 4 episodes
-         * Total: 800 episodes
-         * Reduce By: (0.9/Math.floor(x/4.0))
-         */
-        private double doRapidReduction(int x, Double D)
-        {
-            if (x >= 400)
-                return 0;
-            else if (x % rapidUpdate == 0 && x >= rapidUpdate)
-                return (0.9 / Math.Floor(x / 4.0));
-            else
-                return D;
-        }
-
-        /*
-         * Slow Reduction
-         * Pace: 25 episodes
-         * Total: 5000 episodes
-         * Reduce By: (0.9/Math.floor(x/25.0))
-         */
-        private double doSlowReduction(int x, Double D)
-        {
-            if (x >= 2500)
-                return 0;
-            else if (x % slowUpdate == 0 && x >= slowUpdate)
-                return (0.9 / Math.Floor(x / 25.0));
+            else if (x % reductionConstant == 0 && x >= reductionConstant)
+                return (0.9 / Math.Floor(x / reductionConstant));
             else
                 return D;
         }
@@ -1162,7 +1130,6 @@ namespace IC_ML_MazeSolver
                 Console.WriteLine();
             }
         }
-
 
         /*
          * initDictonary

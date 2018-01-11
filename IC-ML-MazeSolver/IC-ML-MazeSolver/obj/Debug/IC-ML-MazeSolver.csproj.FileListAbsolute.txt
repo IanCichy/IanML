@@ -7,3 +7,13 @@ c:\users\ian\documents\visual studio 2015\Projects\IC-ML-MazeSolver\IC-ML-MazeSo
 c:\users\ian\documents\visual studio 2015\Projects\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC-ML-MazeSolver.pdb
 c:\users\ian\documents\visual studio 2015\Projects\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC_ML_MazeSolver.frmMazeSolver.resources
 c:\users\ian\documents\visual studio 2015\Projects\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC-ML-MazeSolver.csprojResolveAssemblyReference.cache
+C:\Users\icichy\Desktop\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\bin\Debug\IC-ML-MazeSolver.exe.config
+C:\Users\icichy\Desktop\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\bin\Debug\IC-ML-MazeSolver.exe
+C:\Users\icichy\Desktop\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\bin\Debug\IC-ML-MazeSolver.pdb
+C:\Users\icichy\Desktop\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC-ML-MazeSolver.csprojResolveAssemblyReference.cache
+C:\Users\icichy\Desktop\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC_ML_MazeSolver.frmMazeSolver.resources
+C:\Users\icichy\Desktop\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC_ML_MazeSolver.Properties.Resources.resources
+C:\Users\icichy\Desktop\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC-ML-MazeSolver.csproj.GenerateResource.Cache
+C:\Users\icichy\Desktop\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC-ML-MazeSolver.csproj.CoreCompileInputs.cache
+C:\Users\icichy\Desktop\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC-ML-MazeSolver.exe
+C:\Users\icichy\Desktop\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC-ML-MazeSolver.pdb
