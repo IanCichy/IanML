@@ -1,0 +1,9 @@
+c:\users\ian\documents\visual studio 2015\Projects\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC_ML_MazeSolver.Properties.Resources.resources
+c:\users\ian\documents\visual studio 2015\Projects\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC-ML-MazeSolver.csproj.GenerateResource.Cache
+c:\users\ian\documents\visual studio 2015\Projects\IC-ML-MazeSolver\IC-ML-MazeSolver\bin\Debug\IC-ML-MazeSolver.exe.config
+c:\users\ian\documents\visual studio 2015\Projects\IC-ML-MazeSolver\IC-ML-MazeSolver\bin\Debug\IC-ML-MazeSolver.exe
+c:\users\ian\documents\visual studio 2015\Projects\IC-ML-MazeSolver\IC-ML-MazeSolver\bin\Debug\IC-ML-MazeSolver.pdb
+c:\users\ian\documents\visual studio 2015\Projects\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC-ML-MazeSolver.exe
+c:\users\ian\documents\visual studio 2015\Projects\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC-ML-MazeSolver.pdb
+c:\users\ian\documents\visual studio 2015\Projects\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC_ML_MazeSolver.frmMazeSolver.resources
+c:\users\ian\documents\visual studio 2015\Projects\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC-ML-MazeSolver.csprojResolveAssemblyReference.cache
