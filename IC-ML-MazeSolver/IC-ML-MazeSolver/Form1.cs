@@ -152,6 +152,7 @@ namespace IC_ML_MazeSolver
                 Console.Error.Write(e);
             }
             newMap.tiles = map;
+            newMap.initActions();
             return newMap;
         }
 

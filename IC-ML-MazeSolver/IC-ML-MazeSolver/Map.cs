@@ -88,31 +88,31 @@ namespace IC_ML_MazeSolver
         //    this.actions = actions;
         //}
 
-        //private char[,] initActions(char[,] A)
-        //{
-        //    Random rnd = new Random();
-        //    for (int x = 0; x < height; x++)
-        //    {
-        //        for (int y = 0; y < width; y++)
-        //        {
-        //            if (tiles[x, y] == 'H')
-        //                A[x, y] = 'H';
-        //            else
-        //            {
-        //                int R = (int)(rnd.NextDouble() * 4);
-        //                if (R == 0)
-        //                    A[x, y] = 'U';
-        //                else if (R == 1)
-        //                    A[x, y] = 'D';
-        //                else if (R == 2)
-        //                    A[x, y] = 'L';
-        //                else if (R == 3)
-        //                    A[x, y] = 'R';
-        //            }
-        //        }
-        //    }
-        //    return A;
-        //}
+        public void initActions()
+        {
+            actions = new char[height, width];
+            Random rnd = new Random();
+            for (int x = 0; x < height; x++)
+            {
+                for (int y = 0; y < width; y++)
+                {
+                    if (tiles[x, y].type == 3)
+                        actions[x, y] = 'H';
+                    else
+                    {
+                        int R = (int)(rnd.NextDouble() * 4);
+                        if (R == 0)
+                            actions[x, y] = 'U';
+                        else if (R == 1)
+                            actions[x, y] = 'D';
+                        else if (R == 2)
+                            actions[x, y] = 'L';
+                        else if (R == 3)
+                            actions[x, y] = 'R';
+                    }
+                }
+            }
+        }
 
         //public char[,] getActions()
         //{
