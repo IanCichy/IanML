@@ -13,17 +13,17 @@ namespace IC_ML_MazeSolver
 {
     public partial class frmMazeSolver : Form
     {
-
         public int GOALW = 0, GOALH = 0, STARTW = 0, STARTH = 0;
         //The map controller
         private Map map;
         //Constant Variables
         private double gamma = 0.9, epsilon = 0.9, alpha = 0.9, lambda = 0.9, reductionConstant = 10;
         private int stepCount = 0, maxSteps = 0, totalEpisodesToRun = 2000;
-        //HashTables	
+        //Dictionaries	
         private Dictionary<State, Double> stateAction;
         private Dictionary<State, Double> elgStateAction;
         private List<Tuple<int,int>> previousLocations = new List<Tuple<int,int>>();
+        private Dictionary<char, int> tileTypes;
         //GUI Components
         private bool gui = false;
 
@@ -31,6 +31,13 @@ namespace IC_ML_MazeSolver
         {
             InitializeComponent();
             //Initialization
+            tileTypes = new Dictionary<char, int>();
+            tileTypes.Add('O', 0);
+            tileTypes.Add('S', 1);
+            tileTypes.Add('G', 2);
+            tileTypes.Add('H', 3);
+            tileTypes.Add('I', 4);
+
             map = new Map();
         }
 
@@ -48,15 +55,15 @@ namespace IC_ML_MazeSolver
                 //SET FILE NAME
                 txtFile.Text = openFileDialog1.FileName;
                 //READ FILE IN
-                map.setMap(readInput(openFileDialog1.FileName));
+                map = readMapData(openFileDialog1.FileName);
                 //SET WIDTH AND HEIGHT
                 txtWidth.Text = map.width.ToString();
                 txtHeight.Text = map.height.ToString();
 
                 //BUILD OTHER DATA STRUCTURES
                 maxSteps = map.height * map.width * 3;
-                stateAction = initDictonary(map.getMap());
-                elgStateAction = initDictonary(map.getMap());
+                stateAction = initDictonary();
+                elgStateAction = initDictonary();
 
                 //SET UP THE INITAL FRAME
                 buildFrame();
@@ -68,48 +75,69 @@ namespace IC_ML_MazeSolver
          * PRE:A Filename is given to be parsed
          * POST:A two dimensional array is returned to represent the map the agent will be learning in
          */
-        public char[,] readInput(String FileName)
+        public Map readMapData(String FileName)
         {
-            //Find length and width of the maze we are making
-            int h = 0, w = 0;
+            Map newMap = new Map();
+            Tile[,] map = null;
             try
             {
+                //Create a reader to read in the map data
                 System.IO.StreamReader reader = new System.IO.StreamReader(FileName);
+                //Find the height and width of the map
                 String line = reader.ReadLine();
-                w = line.Length;
-                int count = 1;
-                while (reader.ReadLine() != null)
-                {
-                    count++;
-                }
-                h = count;
-                reader.Close();
-            }
-            catch (Exception e)
-            {
-            }
+                newMap.height = int.Parse(line);
+                line = reader.ReadLine();
+                newMap.width = int.Parse(line);
+                line = reader.ReadLine();
 
-            char[,] map = null;
-            try
-            {
-                System.IO.StreamReader reader = new System.IO.StreamReader(FileName);
-                String line = reader.ReadLine();
                 //create the new map for processing and filling
-                map = new char[h, w];
+                map = new Tile[newMap.height, newMap.width];
 
                 for (int x = 0; x < map.GetLength(0); x++)
                 {
                     char[] letters = line.ToCharArray();
                     for (int y = 0; y < map.GetLength(1); y++)
                     {
-                        map[x, y] = letters[y];
+                        //Create a new tile for that location
+                        Tile t = new Tile(x, y, tileTypes[letters[y]]);
+                        t.btn = new Button();
+                        t.btn.Margin = new Padding(0, 0, 0, 0);
+                        t.btn.FlatStyle = FlatStyle.Flat;
 
-                        if (letters[y] == 'S')
+                        switch (t.type)
+                        {
+                            case 0:
+                                t.btn.Text = "O";
+                                t.btn.BackColor = System.Drawing.Color.White;
+                                break;
+                            case 1:
+                                t.btn.Text = "S";
+                                t.btn.BackColor = System.Drawing.Color.Violet;
+                                break;
+                            case 2:
+                                t.btn.Text = "G";
+                                t.btn.BackColor = System.Drawing.Color.Orange;
+                                break;
+                            case 3:
+                                t.btn.Text = "H";
+                                t.btn.BackColor = System.Drawing.Color.SlateGray;
+                                break;
+                            case 4:
+                                t.btn.Text = "I";
+                                t.btn.BackColor = System.Drawing.Color.Cyan;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        map[x, y] = t;
+
+                        if (t.type == 1)
                         {
                             STARTW = y;
                             STARTH = x;
                         }
-                        else if (letters[y] == 'G')
+                        else if (t.type == 2)
                         {
                             GOALW = y;
                             GOALH = x;
@@ -117,13 +145,14 @@ namespace IC_ML_MazeSolver
                     }
                     line = reader.ReadLine();
                 }
-                //Close reader
                 reader.Close();
             }
             catch (Exception e)
             {
+                Console.Error.Write(e);
             }
-            return map;
+            newMap.tiles = map;
+            return newMap;
         }
 
         /*
@@ -138,21 +167,20 @@ namespace IC_ML_MazeSolver
             tlpMaze.ColumnStyles.Clear();
             tlpMaze.RowStyles.Clear();
 
-            tlpMaze.RowCount = map.btnList.GetLength(0);
-            tlpMaze.ColumnCount = map.btnList.GetLength(1);
+            tlpMaze.RowCount = map.height;
+            tlpMaze.ColumnCount = map.width;
 
             int width = (int)(tlpMaze.Width / tlpMaze.ColumnCount);
             int height = (int)(tlpMaze.Height / tlpMaze.RowCount);
             //int btnsize = Math.Min(width, height);
 
-            for (int x = 0; x < map.btnList.GetLength(0); x++)
+            for (int x = 0; x < map.height; x++)
             {
-                for (int y = 0; y < map.btnList.GetLength(1); y++)
+                for (int y = 0; y < map.width; y++)
                 {
-
-                     map.btnList[x, y].Width = width;
-                     map.btnList[x, y].Height = height;
-                    tlpMaze.Controls.Add(map.btnList[x, y], y, x);
+                     map.tiles[x, y].btn.Width = width;
+                     map.tiles[x, y].btn.Height = height;
+                     tlpMaze.Controls.Add(map.tiles[x, y].btn, y, x);
                 }
             }
             this.Refresh();
@@ -170,7 +198,6 @@ namespace IC_ML_MazeSolver
         {
             runMap();
         }
-
 
         public void runMap()
         {
@@ -208,12 +235,12 @@ namespace IC_ML_MazeSolver
         {
             foreach (Tuple<int,int> t in previousLocations)
             {
-                Color c = Color.FromArgb((map.btnList[t.Item1, t.Item2].BackColor.R) != 255 ? 255 : 255,
-                    (map.btnList[t.Item1, t.Item2].BackColor.G) < 220 ? (map.btnList[t.Item1, t.Item2].BackColor.G) + 1 : 220,
-                    (map.btnList[t.Item1, t.Item2].BackColor.B) < 220 ? (map.btnList[t.Item1, t.Item2].BackColor.B) + 1 : 220);
-                map.btnList[t.Item1, t.Item2].BackColor = c;
+                Color c = Color.FromArgb((map.tiles[t.Item1, t.Item2].btn.BackColor.R) != 255 ? 255 : 255,
+                    (map.tiles[t.Item1, t.Item2].btn.BackColor.G) < 220 ? (map.tiles[t.Item1, t.Item2].btn.BackColor.G) + 1 : 220,
+                    (map.tiles[t.Item1, t.Item2].btn.BackColor.B) < 220 ? (map.tiles[t.Item1, t.Item2].btn.BackColor.B) + 1 : 220);
+                map.tiles[t.Item1, t.Item2].btn.BackColor = c;
             }
-            map.btnList[currentY, currentX].BackColor = Color.FromArgb(50,50,50);
+            map.tiles[currentY, currentX].btn.BackColor = Color.FromArgb(50,50,50);
 
             this.Refresh();
         }
@@ -227,25 +254,25 @@ namespace IC_ML_MazeSolver
          */
         private void resetFrame()
         {
-            for (int x = 0; x < map.btnList.GetLength(0); x++)
+            for (int x = 0; x < map.height; x++)
             {
-                for (int y = 0; y < map.btnList.GetLength(1); y++)
+                for (int y = 0; y < map.width; y++)
                 {
-                    if (map.btnList[x, y].Text.Equals("O"))
+                    if (map.tiles[x, y].btn.Text.Equals("O"))
                     {
-                        map.btnList[x, y].BackColor = System.Drawing.Color.White;
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.White;
                     }
-                    else if (map.btnList[x, y].Text.Equals("I"))
+                    else if (map.tiles[x, y].btn.Text.Equals("I"))
                     {
-                        map.btnList[x, y].BackColor = System.Drawing.Color.Cyan;
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.Cyan;
                     }
-                    else if (map.btnList[x, y].Text.Equals("S"))
+                    else if (map.tiles[x, y].btn.Text.Equals("S"))
                     {
-                        map.btnList[x, y].BackColor = System.Drawing.Color.Violet;
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.Violet;
                     }
-                    else if (map.btnList[x, y].Text.Equals("G"))
+                    else if (map.tiles[x, y].btn.Text.Equals("G"))
                     {
-                        map.btnList[x, y].BackColor = System.Drawing.Color.Orange;
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.Orange;
                     }
                 }
             }
@@ -260,33 +287,33 @@ namespace IC_ML_MazeSolver
          */
         private void finalFrame()
         {
-            for (int x = 0; x < map.btnList.GetLength(0); x++)
+            for (int x = 0; x < map.height; x++)
             {
-                for (int y = 0; y < map.btnList.GetLength(1); y++)
+                for (int y = 0; y < map.width; y++)
                 {
-                    String s = map.getActions()[x, y].ToString();
-                    map.btnList[x, y].Text = s;
+                    String s = map.actions[x, y].ToString();
+                    map.tiles[x, y].btn.Text = s;
 
                     if (s.Equals("R"))
                     {
-                        map.btnList[x, y].BackColor = System.Drawing.Color.FromArgb(156, 255, 56);
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.FromArgb(156, 255, 56);
                     }
                     else if (s.Equals("U"))
                     {
-                        map.btnList[x, y].BackColor = System.Drawing.Color.FromArgb(156, 56, 255);
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.FromArgb(156, 56, 255);
                     }
                     else if (s.Equals("D"))
                     {
-                        map.btnList[x, y].BackColor = System.Drawing.Color.FromArgb(56, 255, 255);
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.FromArgb(56, 255, 255);
                     }
                     else if (s.Equals("L"))
                     {
-                        map.btnList[x, y].BackColor = System.Drawing.Color.FromArgb(255, 56, 56);
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.FromArgb(255, 56, 56);
                     }
                 }
             }
-            map.btnList[GOALH, GOALW].BackColor = System.Drawing.Color.Orange;
-            map.btnList[STARTH, STARTW].BackColor = System.Drawing.Color.Violet;
+            map.tiles[GOALH, GOALW].btn.BackColor = System.Drawing.Color.Orange;
+            map.tiles[STARTH, STARTW].btn.BackColor = System.Drawing.Color.Violet;
             this.Refresh();
         }
 
@@ -531,20 +558,20 @@ namespace IC_ML_MazeSolver
                         stepAction = getRandomActionByState(h, w);//choose random action
                     else
                         stepAction = getBestActionByState(h, w);//choose best action
-                    M.getActions()[h, w] = stepAction;
+                    M.actions[h, w] = stepAction;
 
                     State s = new State(h, w, stepAction);
                     double currR = stateAction[s];
 
                     //Take Action A
                     //check to see if we are on ice-
-                    if (M.getMap()[h, w] == 'I')
+                    if (M.tiles[h, w].type == 4)
                         icy = true;
                     else
                         icy = false;
 
                     //If the current action is UP
-                    if (M.getActions()[h, w] == 'U')
+                    if (M.actions[h, w] == 'U')
                     {
                         //if are moving into an open space and were not on ice
                         if (isValidMove(h, w, 'U') > 0 && !icy)
@@ -569,7 +596,7 @@ namespace IC_ML_MazeSolver
                             //This means we tried to move off the grid, stay in place and take -1.0 penalty
                         }
                     }
-                    else if (M.getActions()[h, w] == 'D')
+                    else if (M.actions[h, w] == 'D')
                     {
                         //if are moving into an open space and were not on ice
                         if (isValidMove(h, w, 'D') > 0 && !icy)
@@ -594,7 +621,7 @@ namespace IC_ML_MazeSolver
                             //This means we tried to move off the grid, stay in place and take -1.0 penalty
                         }
                     }
-                    else if (M.getActions()[h, w] == 'L')
+                    else if (M.actions[h, w] == 'L')
                     {
                         //if are moving into an open space and were not on ice
                         if (isValidMove(h, w, 'L') > 0 && !icy)
@@ -619,7 +646,7 @@ namespace IC_ML_MazeSolver
                             //This means we tried to move off the grid, stay in place and take -1.0 penalty
                         }
                     }
-                    else if (M.getActions()[h, w] == 'R')
+                    else if (M.actions[h, w] == 'R')
                     {
                         //if are moving into an open space and were not on ice
                         if (isValidMove(h, w, 'R') > 0 && !icy)
@@ -858,6 +885,25 @@ namespace IC_ML_MazeSolver
         //    }
         //}
 
+
+
+
+
+        public void takeAction()
+        {
+
+        }
+
+
+
+
+
+
+
+
+
+
+
         /*
          * Reduction
          * Pace: reductionConstant episodes
@@ -953,7 +999,7 @@ namespace IC_ML_MazeSolver
 
                 try
                 {
-                    if (map.getMap()[h, w] == 'H')
+                    if (map.tiles[h, w].type == 3)
                     {
                         vars[0] = orig_h;
                         vars[1] = orig_w;
@@ -1004,7 +1050,7 @@ namespace IC_ML_MazeSolver
 
                 try
                 {
-                    if (map.getMap()[h, w] == 'H')
+                    if (map.tiles[h, w].type == 3)
                     {
                         vars[0] = orig_h;
                         vars[1] = orig_w;
@@ -1057,7 +1103,7 @@ namespace IC_ML_MazeSolver
 
             try
             {
-                if (map.getActions()[h, w] == 'H')
+                if (map.actions[h, w] == 'H')
                     return -1;
             }
             catch (Exception e)
@@ -1116,32 +1162,16 @@ namespace IC_ML_MazeSolver
         }
 
         /*
-         * Utility method to print various items during debugging and for pratical use
-         */
-        private void printAll()
-        {
-            Console.WriteLine("---------------- Actions ----------------");
-            for (int x = 0; x < map.getMap().GetLength(0); x++)
-            {
-                for (int y = 0; y < map.getMap().GetLength(1); y++)
-                {
-                    Console.Write(map.getActions()[x, y]);
-                }
-                Console.WriteLine();
-            }
-        }
-
-        /*
          * initDictonary
          * pre: A given map of data
          * post: A dictionary with all possible state action combinations
          */
-        private Dictionary<State, Double> initDictonary(char[,] chars)
+        private Dictionary<State, Double> initDictonary()
         {
             Dictionary<State, Double> dict = new Dictionary<State, Double>();
-            for (int x = 0; x < chars.GetLength(0); x++)
+            for (int x = 0; x < map.height; x++)
             {
-                for (int y = 0; y < chars.GetLength(1); y++)
+                for (int y = 0; y < map.width; y++)
                 {
                     State S = new State(x, y, 'U');
                     dict.Add(S, 0.0);
