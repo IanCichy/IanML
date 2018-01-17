@@ -37,8 +37,6 @@ namespace IC_ML_MazeSolver
             tileTypes.Add('G', 2);
             tileTypes.Add('H', 3);
             tileTypes.Add('I', 4);
-
-            map = new Map();
         }
 
         private void btnFile_Click(object sender, EventArgs e)
@@ -54,15 +52,26 @@ namespace IC_ML_MazeSolver
             {
                 //SET FILE NAME
                 txtFile.Text = openFileDialog1.FileName;
+
                 //READ FILE IN
+                map = new Map();
                 map = readMapData(openFileDialog1.FileName);
+
                 //SET WIDTH AND HEIGHT
                 txtWidth.Text = map.width.ToString();
                 txtHeight.Text = map.height.ToString();
 
                 //BUILD OTHER DATA STRUCTURES
                 maxSteps = map.height * map.width * 3;
+                if (stateAction != null)
+                {
+                    stateAction.Clear();
+                }
                 stateAction = initDictonary();
+                if (elgStateAction != null)
+                {
+                    elgStateAction.Clear();
+                }
                 elgStateAction = initDictonary();
 
                 //SET UP THE INITAL FRAME
@@ -209,12 +218,15 @@ namespace IC_ML_MazeSolver
 
             if (rbtnQLearning.Checked)
             {
-                    //DO SOMETHING THREAD LIKE
-                Q_Learning(map);
+                //DO SOMETHING THREAD LIKE
+                 var t = Task.Run(() => Q_Learning(map));
+                 t.Wait();
+               // Q_Learning(map);
+
             }
             else if (rbtnSarsa.Checked)
             {
-
+                SARSA_Learning(map);
             }
             else if (rbtnSarsaElg.Checked)
             {
@@ -324,179 +336,184 @@ namespace IC_ML_MazeSolver
         // * SARSA Learning method - learns by On-Policy updates to 
         // * find a goal in a  maze
         // */
-        //private  void SARSA_Learning(Map M)
-        //{
-        //    boolean icy = false;
-        //    for (int x = 0; x < episodeNum; x++)
-        //    {
-        //        int w = STARTW, h = STARTH;
-        //        count = 0;
-        //        char action = 'R';
+        private void SARSA_Learning(Map M)
+        {
+            bool icy = false;
+            for (int currentEpisodeNumber = 0; currentEpisodeNumber < totalEpisodesToRun; currentEpisodeNumber++)
+            {
+                if (gui)
+                {
+                    previousLocations.Clear();
 
-        //        //M.getActions()[h,w] = getBestActionByState(h,w);
+                }
+                lblEpisodeProgress.Text = (currentEpisodeNumber + 1) + "/" + totalEpisodesToRun;
+                pgbEpisodeNum.Value = currentEpisodeNumber + 1;
 
-        //        if (reductionType == 1)
-        //            eps = doSlowReduction(x, eps);
-        //        else if (reductionType == 2)
-        //            eps = doRapidReduction(x, eps);
-        //        else
-        //            eps = doNormalReduction(x, eps);
+                int w = STARTW, h = STARTH;
+                int prew = STARTW, preh = STARTH;
+                stepCount = 0;
+                char stepAction;
 
-        //        if (x % 100 == 0)
-        //        {
-        //            Console.WriteLine("TRIALS : " + x);
-        //            printAll();
-        //        }
+                epsilon = calcuateReductionConstant(currentEpisodeNumber, epsilon);
 
-        //        //OPTINAL GUI INTERFACE
-        //        if (gui)
-        //            resetFrame(frame);
+                //OPTINAL GUI INTERFACE
+                if (gui)
+                    resetFrame();
 
-        //        while ((!(w == GOALW && h == GOALH)))
-        //        {
-        //            count++;
+                while ((!(w == GOALW && h == GOALH)))
+                {
+                    stepCount++;
 
-        //            //OPTINAL GUI INTERFACE
-        //            if (gui)
-        //                updateFrame(frame, h, w);
+                    if (gui)
+                    {
+                        previousLocations.Add(new Tuple<int, int>(h, w));
+                    }
 
-        //            //Optional Step Limit
-        //            //if(eps<0.1 & count >= maxSteps){
-        //            //	break;
-        //            //}
+                    prew = w;
+                    preh = h;
+                    //OPTINAL GUI INTERFACE
+                    if (gui)
+                        updateFrame(h, w, preh, prew);
 
-        //            double stepReward = -1.0;
-        //            char currA = M.getActions()[h, w];
-        //            State s = new State(h, w, currA);
-        //            double currR = stateAction.get(s);
+                    //addded step limit
+                    if (stepCount > maxSteps)
+                    {
+                        break;
+                    }
 
-        //            //Take Action A
-        //            //check to see if we are on ice-
-        //            if (M.getMap()[h, w] == 'I')
-        //                icy = true;
-        //            else
-        //                icy = false;
+                    double stepReward = -1.0;
+                    char currA = M.actions[h, w];
+                    State s = new State(h, w, currA);
+                    double currR = stateAction[s];
 
-        //            //If the current action is UP
-        //            if (M.getActions()[h, w] == 'U')
-        //            {
-        //                //if are moving into an open space and were not on ice
-        //                if (isValidMove(h, w, 'U') > 0 && !icy)
-        //                {
-        //                    h--;
-        //                }
-        //                //if are moving into a hole and were not on ice
-        //                else if (isValidMove(h, w, 'U') == -1 && !icy)
-        //                {
-        //                    stepReward = -100;
-        //                }
-        //                //we are moving on an icy tile
-        //                else if (icy)
-        //                {
-        //                    int v[] = getIcyMove(h, w, 'U');
-        //                    h = v[0];
-        //                    w = v[1];
-        //                    stepReward = (double)v[2];
-        //                }
-        //                else
-        //                {
-        //                    //This means we tried to move off the grid, stay in place and take -1.0 penalty
-        //                }
-        //            }
-        //            else if (M.getActions()[h, w] == 'D')
-        //            {
-        //                //if are moving into an open space and were not on ice
-        //                if (isValidMove(h, w, 'D') > 0 && !icy)
-        //                {
-        //                    h++;
-        //                }
-        //                //if are moving into a hole and were not on ice
-        //                else if (isValidMove(h, w, 'D') == -1 && !icy)
-        //                {
-        //                    stepReward = -100;
-        //                }
-        //                //we are moving on an icy tile
-        //                else if (icy)
-        //                {
-        //                    int v[] = getIcyMove(h, w, 'D');
-        //                    h = v[0];
-        //                    w = v[1];
-        //                    stepReward = (double)v[2];
-        //                }
-        //                else
-        //                {
-        //                    //This means we tried to move off the grid, stay in place and take -1.0 penalty
-        //                }
-        //            }
-        //            else if (M.getActions()[h, w] == 'L')
-        //            {
-        //                //if are moving into an open space and were not on ice
-        //                if (isValidMove(h, w, 'L') > 0 && !icy)
-        //                {
-        //                    w--;
-        //                }
-        //                //if are moving into a hole and were not on ice
-        //                else if (isValidMove(h, w, 'L') == -1 && !icy)
-        //                {
-        //                    stepReward = -100;
-        //                }
-        //                //we are moving on an icy tile
-        //                else if (icy)
-        //                {
-        //                    int v[] = getIcyMove(h, w, 'L');
-        //                    h = v[0];
-        //                    w = v[1];
-        //                    stepReward = (double)v[2];
-        //                }
-        //                else
-        //                {
-        //                    //This means we tried to move off the grid, stay in place and take -1.0 penalty
-        //                }
-        //            }
-        //            else if (M.getActions()[h, w] == 'R')
-        //            {
-        //                //if are moving into an open space and were not on ice
-        //                if (isValidMove(h, w, 'R') > 0 && !icy)
-        //                {
-        //                    w++;
-        //                }
-        //                //if are moving into a hole and were not on ice
-        //                else if (isValidMove(h, w, 'R') == -1 && !icy)
-        //                {
-        //                    stepReward = -100;
-        //                }
-        //                //we are moving on an icy tile
-        //                else if (icy)
-        //                {
-        //                    int v[] = getIcyMove(h, w, 'R');
-        //                    h = v[0];
-        //                    w = v[1];
-        //                    stepReward = (double)v[2];
-        //                }
-        //                else
-        //                {
-        //                    //This means we tried to move off the grid, stay in place and take -1.0 penalty
-        //                }
-        //            }
-        //            //end take action
+                    //Take Action A
+                    //check to see if we are on ice-
+                    if (M.tiles[h, w].type == 4)
+                        icy = true;
+                    else
+                        icy = false;
 
-        //            //Observe next state s' and one step reward
-        //            char newA = M.getActions()[h, w];
-        //            double newR = stateAction.get(new State(h, w, newA));
+                    //If the current action is UP
+                    if (M.actions[h, w] == 'U')
+                    {
+                        //if are moving into an open space and were not on ice
+                        if (isValidMove(h, w, 'U') > 0 && !icy)
+                        {
+                            h--;
+                        }
+                        //if are moving into a hole and were not on ice
+                        else if (isValidMove(h, w, 'U') == -1 && !icy)
+                        {
+                            stepReward = -100;
+                        }
+                        //we are moving on an icy tile
+                        else if (icy)
+                        {
+                            int[] v = getIcyMove(h, w, 'U');
+                            h = v[0];
+                            w = v[1];
+                            stepReward = (double)v[2];
+                        }
+                        else
+                        {
+                            //This means we tried to move off the grid, stay in place and take -1.0 penalty
+                        }
+                    }
+                    else if (M.actions[h, w] == 'D')
+                    {
+                        //if are moving into an open space and were not on ice
+                        if (isValidMove(h, w, 'D') > 0 && !icy)
+                        {
+                            h++;
+                        }
+                        //if are moving into a hole and were not on ice
+                        else if (isValidMove(h, w, 'D') == -1 && !icy)
+                        {
+                            stepReward = -100;
+                        }
+                        //we are moving on an icy tile
+                        else if (icy)
+                        {
+                            int[] v = getIcyMove(h, w, 'D');
+                            h = v[0];
+                            w = v[1];
+                            stepReward = (double)v[2];
+                        }
+                        else
+                        {
+                            //This means we tried to move off the grid, stay in place and take -1.0 penalty
+                        }
+                    }
+                    else if (M.actions[h, w] == 'L')
+                    {
+                        //if are moving into an open space and were not on ice
+                        if (isValidMove(h, w, 'L') > 0 && !icy)
+                        {
+                            w--;
+                        }
+                        //if are moving into a hole and were not on ice
+                        else if (isValidMove(h, w, 'L') == -1 && !icy)
+                        {
+                            stepReward = -100;
+                        }
+                        //we are moving on an icy tile
+                        else if (icy)
+                        {
+                            int[] v = getIcyMove(h, w, 'L');
+                            h = v[0];
+                            w = v[1];
+                            stepReward = (double)v[2];
+                        }
+                        else
+                        {
+                            //This means we tried to move off the grid, stay in place and take -1.0 penalty
+                        }
+                    }
+                    else if (M.actions[h, w] == 'R')
+                    {
+                        //if are moving into an open space and were not on ice
+                        if (isValidMove(h, w, 'R') > 0 && !icy)
+                        {
+                            w++;
+                        }
+                        //if are moving into a hole and were not on ice
+                        else if (isValidMove(h, w, 'R') == -1 && !icy)
+                        {
+                            stepReward = -100;
+                        }
+                        //we are moving on an icy tile
+                        else if (icy)
+                        {
+                            int[] v = getIcyMove(h, w, 'R');
+                            h = v[0];
+                            w = v[1];
+                            stepReward = (double)v[2];
+                        }
+                        else
+                        {
+                            //This means we tried to move off the grid, stay in place and take -1.0 penalty
+                        }
+                    }
+                    //end take action
 
-        //            //Set next action a', chosen E-greedily based on Q(s',a')
-        //            double r = Math.random();
-        //            if (r <= eps)
-        //                action = getRandomActionByState(h, w);//choose random action
-        //            else
-        //                action = getBestActionByState(h, w);//choose best action
+                    //Observe next state s' and one step reward
+                    char newA = M.actions[h, w];
+                    double newR = stateAction[new State(h, w, newA)];
 
-        //            double e = currR + alpha * (stepReward + gamma * (newR - currR));
-        //            stateAction.replace(s, e);
-        //            M.getActions()[h, w] = action;
-        //        }
-        //    }
-        //}
+                    //Set next action a', chosen E-greedily based on Q(s',a')
+                    Random rnd = new Random(DateTime.Now.Millisecond);
+                    double r = rnd.NextDouble();
+                    if (r <= epsilon)
+                        stepAction = getRandomActionByState(h, w);//choose random action
+                    else
+                        stepAction = getBestActionByState(h, w);//choose best action
+
+                    double e = currR + alpha * (stepReward + gamma * (newR - currR));
+                    stateAction[s] = e;
+                    M.actions[h, w] = stepAction;
+                }
+            }
+        }
 
         ///*
          /* Q Learning method - learns by Off-Policy updates to
@@ -512,16 +529,14 @@ namespace IC_ML_MazeSolver
                     previousLocations.Clear();
 
                 }
-                 lblEpisodeProgress.Text = (currentEpisodeNumber + 1) + "/" + totalEpisodesToRun;
-                 pgbEpisodeNum.Value = currentEpisodeNumber + 1;
+                // lblEpisodeProgress.Text = (currentEpisodeNumber + 1) + "/" + totalEpisodesToRun;
+                // pgbEpisodeNum.Value = currentEpisodeNumber + 1;
 
                 int w = STARTW, h = STARTH;
                 int prew = STARTW, preh = STARTH;
                 stepCount = 0;
 
                 char stepAction;
-                //M.getActions()[h, w] = getBestActionByState(h, w);
-
                 epsilon = calcuateReductionConstant(currentEpisodeNumber, epsilon);
 
                 //OPTINAL GUI INTERFACE
@@ -553,7 +568,7 @@ namespace IC_ML_MazeSolver
                     double stepReward = -1.0;
 
                     //Set next action a', chosen E-greedily based on Q(s',a')
-                    Random rnd = new Random();
+                    Random rnd = new Random(DateTime.Now.Millisecond);
                     double r = rnd.NextDouble();
                     if (r <= epsilon)
                         stepAction = getRandomActionByState(h, w);//choose random action
@@ -886,24 +901,10 @@ namespace IC_ML_MazeSolver
         //    }
         //}
 
-
-
-
-
         public void takeAction()
         {
 
         }
-
-
-
-
-
-
-
-
-
-
 
         /*
          * Reduction
@@ -928,7 +929,7 @@ namespace IC_ML_MazeSolver
          */
         private int[] getIcyMove(int h, int w, char c)
         {
-            Random rnd = new Random();
+            Random rnd = new Random(DateTime.Now.Millisecond);
             double R = rnd.NextDouble();
             int[] vars = { 0, 0, 0 };
 
@@ -962,7 +963,7 @@ namespace IC_ML_MazeSolver
                     vars[1] = w;
                     vars[2] = -100;
                 }
-                else if (isValidMove(h, w, c) == -1)
+                else if (isValidMove(h, w, c) == -2)
                 {//normal move off map, stay put
                     vars[0] = h;
                     vars[1] = w;
@@ -1150,7 +1151,7 @@ namespace IC_ML_MazeSolver
          */
         private char getRandomActionByState(int h, int w)
         {
-            Random rnd = new Random();
+            Random rnd = new Random(DateTime.Now.Millisecond);
             int R = (int)(rnd.NextDouble() * 4);
             if (R == 0)
                 return 'U';
