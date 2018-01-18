@@ -29,10 +29,6 @@
         private void InitializeComponent()
         {
             this.btnStart = new System.Windows.Forms.Button();
-            this.txtHeight = new System.Windows.Forms.TextBox();
-            this.txtWidth = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label4 = new System.Windows.Forms.Label();
             this.rbtnSarsaElg = new System.Windows.Forms.RadioButton();
@@ -61,51 +57,13 @@
             // btnStart
             // 
             this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnStart.Location = new System.Drawing.Point(5, 490);
+            this.btnStart.Location = new System.Drawing.Point(5, 310);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(180, 40);
             this.btnStart.TabIndex = 5;
             this.btnStart.Text = "Start";
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
-            // 
-            // txtHeight
-            // 
-            this.txtHeight.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtHeight.Location = new System.Drawing.Point(5, 108);
-            this.txtHeight.Name = "txtHeight";
-            this.txtHeight.Size = new System.Drawing.Size(77, 20);
-            this.txtHeight.TabIndex = 6;
-            this.txtHeight.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // txtWidth
-            // 
-            this.txtWidth.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtWidth.Location = new System.Drawing.Point(5, 82);
-            this.txtWidth.Name = "txtWidth";
-            this.txtWidth.Size = new System.Drawing.Size(77, 20);
-            this.txtWidth.TabIndex = 7;
-            this.txtWidth.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(91, 108);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(38, 13);
-            this.label1.TabIndex = 8;
-            this.label1.Text = "Height";
-            // 
-            // label2
-            // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(90, 82);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 13);
-            this.label2.TabIndex = 9;
-            this.label2.Text = "Width";
             // 
             // panel1
             // 
@@ -114,7 +72,7 @@
             this.panel1.Controls.Add(this.rbtnSarsaElg);
             this.panel1.Controls.Add(this.rbtnSarsa);
             this.panel1.Controls.Add(this.rbtnQLearning);
-            this.panel1.Location = new System.Drawing.Point(5, 240);
+            this.panel1.Location = new System.Drawing.Point(5, 60);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(180, 100);
             this.panel1.TabIndex = 11;
@@ -168,9 +126,9 @@
             // btnFile
             // 
             this.btnFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnFile.Location = new System.Drawing.Point(62, 31);
+            this.btnFile.Location = new System.Drawing.Point(65, 30);
             this.btnFile.Name = "btnFile";
-            this.btnFile.Size = new System.Drawing.Size(123, 26);
+            this.btnFile.Size = new System.Drawing.Size(120, 25);
             this.btnFile.TabIndex = 12;
             this.btnFile.Text = "Select File";
             this.btnFile.UseVisualStyleBackColor = true;
@@ -193,7 +151,7 @@
             this.panel2.Controls.Add(this.label3);
             this.panel2.Controls.Add(this.label5);
             this.panel2.Controls.Add(this.txtEpisodesToRun);
-            this.panel2.Location = new System.Drawing.Point(5, 345);
+            this.panel2.Location = new System.Drawing.Point(5, 165);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(180, 108);
             this.panel2.TabIndex = 14;
@@ -278,7 +236,7 @@
             // pgbEpisodeNum
             // 
             this.pgbEpisodeNum.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pgbEpisodeNum.Location = new System.Drawing.Point(5, 461);
+            this.pgbEpisodeNum.Location = new System.Drawing.Point(5, 281);
             this.pgbEpisodeNum.Name = "pgbEpisodeNum";
             this.pgbEpisodeNum.Size = new System.Drawing.Size(180, 23);
             this.pgbEpisodeNum.TabIndex = 16;
@@ -288,7 +246,7 @@
             this.lblEpisodeProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblEpisodeProgress.AutoSize = true;
             this.lblEpisodeProgress.BackColor = System.Drawing.Color.Transparent;
-            this.lblEpisodeProgress.Location = new System.Drawing.Point(92, 465);
+            this.lblEpisodeProgress.Location = new System.Drawing.Point(92, 285);
             this.lblEpisodeProgress.Name = "lblEpisodeProgress";
             this.lblEpisodeProgress.Size = new System.Drawing.Size(0, 13);
             this.lblEpisodeProgress.TabIndex = 18;
@@ -300,11 +258,7 @@
             this.panel3.Controls.Add(this.btnReset);
             this.panel3.Controls.Add(this.txtFile);
             this.panel3.Controls.Add(this.btnStart);
-            this.panel3.Controls.Add(this.txtHeight);
-            this.panel3.Controls.Add(this.txtWidth);
             this.panel3.Controls.Add(this.lblEpisodeProgress);
-            this.panel3.Controls.Add(this.label1);
-            this.panel3.Controls.Add(this.label2);
             this.panel3.Controls.Add(this.pgbEpisodeNum);
             this.panel3.Controls.Add(this.panel1);
             this.panel3.Controls.Add(this.btnFile);
@@ -316,7 +270,7 @@
             // 
             // btnReset
             // 
-            this.btnReset.Location = new System.Drawing.Point(5, 535);
+            this.btnReset.Location = new System.Drawing.Point(5, 355);
             this.btnReset.Name = "btnReset";
             this.btnReset.Size = new System.Drawing.Size(180, 40);
             this.btnReset.TabIndex = 19;
@@ -347,10 +301,6 @@
 
         #endregion
         private System.Windows.Forms.Button btnStart;
-        private System.Windows.Forms.TextBox txtHeight;
-        private System.Windows.Forms.TextBox txtWidth;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.RadioButton rbtnSarsaElg;
         private System.Windows.Forms.RadioButton rbtnSarsa;

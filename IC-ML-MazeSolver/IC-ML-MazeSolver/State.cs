@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static IC_ML_MazeSolver.frmMazeSolver;
 
 namespace IC_ML_MazeSolver
 {
@@ -10,9 +11,9 @@ namespace IC_ML_MazeSolver
     {
         private int xPos { get; set; }
         private int yPos { get; set; }
-        private char action { get; set; }
+        private Actions action { get; set; }
 
-        public State(int y, int x, char a)
+        public State(int y, int x, Actions a)
         {
             xPos = x;
             yPos = y;
