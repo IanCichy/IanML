@@ -26,4 +26,3 @@ C:\Users\Ian\Source\Repos\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC_M
 C:\Users\Ian\Source\Repos\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC_ML_MazeSolver.Properties.Resources.resources
 C:\Users\Ian\Source\Repos\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC-ML-MazeSolver.csproj.GenerateResource.Cache
 C:\Users\Ian\Source\Repos\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC-ML-MazeSolver.csproj.CoreCompileInputs.cache
-C:\Users\Ian\Source\Repos\IanML\IC-ML-MazeSolver\IC-ML-MazeSolver\obj\Debug\IC-ML-MazeSolver.csprojResolveAssemblyReference.cache
