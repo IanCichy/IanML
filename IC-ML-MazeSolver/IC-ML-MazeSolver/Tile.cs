@@ -13,6 +13,7 @@ namespace IC_ML_MazeSolver
         public int yLoc { get; set; }
         public int type { get; set; }
         public Button btn { get; set; }
+        public bool isHole { get; set; }
 
         public Tile(int x, int y, int t)
         {
@@ -20,6 +21,14 @@ namespace IC_ML_MazeSolver
             xLoc = x;
             yLoc = y;
             type = t;
+            if(type == 3)
+            {
+                isHole = true;
+            }
+            else
+            {
+                isHole = false;
+            }
         }
     }
 }

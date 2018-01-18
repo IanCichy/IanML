@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Threading;
 
 namespace IC_ML_MazeSolver
 {
@@ -22,10 +23,12 @@ namespace IC_ML_MazeSolver
         //Dictionaries	
         private Dictionary<State, Double> stateAction;
         private Dictionary<State, Double> elgStateAction;
-        private List<Tuple<int,int>> previousLocations = new List<Tuple<int,int>>();
+        private List<Tuple<int, int>> previousLocations = new List<Tuple<int, int>>();
         private Dictionary<char, int> tileTypes;
         //GUI Components
         private bool gui = false;
+        Random rnd = new Random(DateTime.Now.Millisecond);
+
 
         public frmMazeSolver()
         {
@@ -79,6 +82,24 @@ namespace IC_ML_MazeSolver
             }
         }
 
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            map.initActions();
+
+            if (stateAction != null)
+            {
+                stateAction.Clear();
+            }
+            stateAction = initDictonary();
+            if (elgStateAction != null)
+            {
+                elgStateAction.Clear();
+            }
+            elgStateAction = initDictonary();
+            previousLocations.Clear();
+            resetFrame();
+        }
+
         /*
          * Main input processing method to read in from the given file and create the map object
          * PRE:A Filename is given to be parsed
@@ -116,7 +137,6 @@ namespace IC_ML_MazeSolver
                         switch (t.type)
                         {
                             case 0:
-                                t.btn.Text = "O";
                                 t.btn.BackColor = System.Drawing.Color.White;
                                 break;
                             case 1:
@@ -128,11 +148,9 @@ namespace IC_ML_MazeSolver
                                 t.btn.BackColor = System.Drawing.Color.Orange;
                                 break;
                             case 3:
-                                t.btn.Text = "H";
                                 t.btn.BackColor = System.Drawing.Color.SlateGray;
                                 break;
                             case 4:
-                                t.btn.Text = "I";
                                 t.btn.BackColor = System.Drawing.Color.Cyan;
                                 break;
                             default:
@@ -188,9 +206,9 @@ namespace IC_ML_MazeSolver
             {
                 for (int y = 0; y < map.width; y++)
                 {
-                     map.tiles[x, y].btn.Width = width;
-                     map.tiles[x, y].btn.Height = height;
-                     tlpMaze.Controls.Add(map.tiles[x, y].btn, y, x);
+                    map.tiles[x, y].btn.Width = width;
+                    map.tiles[x, y].btn.Height = height;
+                    tlpMaze.Controls.Add(map.tiles[x, y].btn, y, x);
                 }
             }
             this.Refresh();
@@ -198,7 +216,7 @@ namespace IC_ML_MazeSolver
 
         private void frmMazeSolver_ResizeEnd(object sender, EventArgs e)
         {
-            if(txtFile.Text != null && !txtFile.Text.Equals(""))
+            if (txtFile.Text != null && !txtFile.Text.Equals(""))
             {
                 buildFrame();
             }
@@ -218,15 +236,15 @@ namespace IC_ML_MazeSolver
 
             if (rbtnQLearning.Checked)
             {
-                //DO SOMETHING THREAD LIKE
-                 var t = Task.Run(() => Q_Learning(map));
-                 t.Wait();
-               // Q_Learning(map);
-
+                var t = Task.Run(() => Q_Learning(map));
+                t.Wait();
+                //Q_Learning(map);
             }
             else if (rbtnSarsa.Checked)
             {
-                SARSA_Learning(map);
+                var t = Task.Run(() => SARSA_Learning(map));
+                t.Wait();
+                //SARSA_Learning(map);
             }
             else if (rbtnSarsaElg.Checked)
             {
@@ -234,7 +252,6 @@ namespace IC_ML_MazeSolver
             }
 
             finalFrame();
-
         }
 
         /*
@@ -246,14 +263,14 @@ namespace IC_ML_MazeSolver
          */
         private void updateFrame(int currentY, int currentX, int previousY, int previousX)
         {
-            foreach (Tuple<int,int> t in previousLocations)
+            foreach (Tuple<int, int> t in previousLocations)
             {
                 Color c = Color.FromArgb((map.tiles[t.Item1, t.Item2].btn.BackColor.R) != 255 ? 255 : 255,
                     (map.tiles[t.Item1, t.Item2].btn.BackColor.G) < 220 ? (map.tiles[t.Item1, t.Item2].btn.BackColor.G) + 1 : 220,
                     (map.tiles[t.Item1, t.Item2].btn.BackColor.B) < 220 ? (map.tiles[t.Item1, t.Item2].btn.BackColor.B) + 1 : 220);
                 map.tiles[t.Item1, t.Item2].btn.BackColor = c;
             }
-            map.tiles[currentY, currentX].btn.BackColor = Color.FromArgb(50,50,50);
+            map.tiles[currentY, currentX].btn.BackColor = Color.FromArgb(50, 50, 50);
 
             this.Refresh();
         }
@@ -271,19 +288,20 @@ namespace IC_ML_MazeSolver
             {
                 for (int y = 0; y < map.width; y++)
                 {
-                    if (map.tiles[x, y].btn.Text.Equals("O"))
+                    map.tiles[x, y].btn.Text = "";
+                    if (map.tiles[x, y].type == 0)
                     {
                         map.tiles[x, y].btn.BackColor = System.Drawing.Color.White;
                     }
-                    else if (map.tiles[x, y].btn.Text.Equals("I"))
+                    else if (map.tiles[x, y].type ==4 )
                     {
                         map.tiles[x, y].btn.BackColor = System.Drawing.Color.Cyan;
                     }
-                    else if (map.tiles[x, y].btn.Text.Equals("S"))
+                    else if (map.tiles[x, y].type ==1)
                     {
                         map.tiles[x, y].btn.BackColor = System.Drawing.Color.Violet;
                     }
-                    else if (map.tiles[x, y].btn.Text.Equals("G"))
+                    else if (map.tiles[x, y].type ==2)
                     {
                         map.tiles[x, y].btn.BackColor = System.Drawing.Color.Orange;
                     }
@@ -330,8 +348,6 @@ namespace IC_ML_MazeSolver
             this.Refresh();
         }
 
-
-
         ///*
         // * SARSA Learning method - learns by On-Policy updates to 
         // * find a goal in a  maze
@@ -346,8 +362,8 @@ namespace IC_ML_MazeSolver
                     previousLocations.Clear();
 
                 }
-                lblEpisodeProgress.Text = (currentEpisodeNumber + 1) + "/" + totalEpisodesToRun;
-                pgbEpisodeNum.Value = currentEpisodeNumber + 1;
+                //lblEpisodeProgress.Text = (currentEpisodeNumber + 1) + "/" + totalEpisodesToRun;
+                //pgbEpisodeNum.Value = currentEpisodeNumber + 1;
 
                 int w = STARTW, h = STARTH;
                 int prew = STARTW, preh = STARTH;
@@ -501,7 +517,6 @@ namespace IC_ML_MazeSolver
                     double newR = stateAction[new State(h, w, newA)];
 
                     //Set next action a', chosen E-greedily based on Q(s',a')
-                    Random rnd = new Random(DateTime.Now.Millisecond);
                     double r = rnd.NextDouble();
                     if (r <= epsilon)
                         stepAction = getRandomActionByState(h, w);//choose random action
@@ -529,8 +544,8 @@ namespace IC_ML_MazeSolver
                     previousLocations.Clear();
 
                 }
-                // lblEpisodeProgress.Text = (currentEpisodeNumber + 1) + "/" + totalEpisodesToRun;
-                // pgbEpisodeNum.Value = currentEpisodeNumber + 1;
+                //lblEpisodeProgress.Text = (currentEpisodeNumber + 1) + "/" + totalEpisodesToRun;
+                //pgbEpisodeNum.Value = currentEpisodeNumber + 1;
 
                 int w = STARTW, h = STARTH;
                 int prew = STARTW, preh = STARTH;
@@ -568,7 +583,6 @@ namespace IC_ML_MazeSolver
                     double stepReward = -1.0;
 
                     //Set next action a', chosen E-greedily based on Q(s',a')
-                    Random rnd = new Random(DateTime.Now.Millisecond);
                     double r = rnd.NextDouble();
                     if (r <= epsilon)
                         stepAction = getRandomActionByState(h, w);//choose random action
@@ -605,7 +619,7 @@ namespace IC_ML_MazeSolver
                             int[] v = getIcyMove(h, w, 'U');
                             h = v[0];
                             w = v[1];
-                            stepReward = (double)v[2];
+                            stepReward = v[2];
                         }
                         else
                         {
@@ -630,7 +644,7 @@ namespace IC_ML_MazeSolver
                             int[] v = getIcyMove(h, w, 'D');
                             h = v[0];
                             w = v[1];
-                            stepReward = (double)v[2];
+                            stepReward = v[2];
                         }
                         else
                         {
@@ -655,7 +669,7 @@ namespace IC_ML_MazeSolver
                             int[] v = getIcyMove(h, w, 'L');
                             h = v[0];
                             w = v[1];
-                            stepReward = (double)v[2];
+                            stepReward = v[2];
                         }
                         else
                         {
@@ -680,7 +694,7 @@ namespace IC_ML_MazeSolver
                             int[] v = getIcyMove(h, w, 'R');
                             h = v[0];
                             w = v[1];
-                            stepReward = (double)v[2];
+                            stepReward = v[2];
                         }
                         else
                         {
@@ -913,7 +927,7 @@ namespace IC_ML_MazeSolver
          */
         private double calcuateReductionConstant(int x, Double D)
         {
-            if (x >= (totalEpisodesToRun/2))
+            if (x >= (totalEpisodesToRun / 2))
                 return 0;
             else if (x % reductionConstant == 0 && x >= reductionConstant)
                 return (0.9 / Math.Floor(x / reductionConstant));
@@ -929,13 +943,13 @@ namespace IC_ML_MazeSolver
          */
         private int[] getIcyMove(int h, int w, char c)
         {
-            Random rnd = new Random(DateTime.Now.Millisecond);
             double R = rnd.NextDouble();
-            int[] vars = { 0, 0, 0 };
+            int[] returnVector = { 0, 0, 0 };
 
             if (R <= 0.8)
             {
-                if (isValidMove(h, w, c) > 0)
+                int validityScore = isValidMove(h, w, c);
+                if (validityScore > 0)
                 {//normal move
                     if (c == 'U')
                     {
@@ -953,23 +967,23 @@ namespace IC_ML_MazeSolver
                     {
                         w++;
                     }
-                    vars[0] = h;
-                    vars[1] = w;
-                    vars[2] = -1;
+                    returnVector[0] = h;
+                    returnVector[1] = w;
+                    returnVector[2] = -1;
                 }
-                else if (isValidMove(h, w, c) == -1)
+                else if (validityScore == -1)
                 {//normal move hole
-                    vars[0] = h;
-                    vars[1] = w;
-                    vars[2] = -100;
+                    returnVector[0] = h;
+                    returnVector[1] = w;
+                    returnVector[2] = -100;
                 }
-                else if (isValidMove(h, w, c) == -2)
+                else if (validityScore == -2)
                 {//normal move off map, stay put
-                    vars[0] = h;
-                    vars[1] = w;
-                    vars[2] = -1;
+                    returnVector[0] = h;
+                    returnVector[1] = w;
+                    returnVector[2] = -1;
                 }
-                return vars;
+                return returnVector;
             }
             else if (R > 0.8 && R <= 0.9)
             {//Slip to left/above intended move
@@ -1001,26 +1015,26 @@ namespace IC_ML_MazeSolver
 
                 try
                 {
-                    if (map.tiles[h, w].type == 3)
+                    if (map.tiles[h, w].isHole)
                     {
-                        vars[0] = orig_h;
-                        vars[1] = orig_w;
-                        vars[2] = -100;
+                        returnVector[0] = orig_h;
+                        returnVector[1] = orig_w;
+                        returnVector[2] = -100;
                     }
                     else
                     {
-                        vars[0] = h;
-                        vars[1] = w;
-                        vars[2] = -1;
+                        returnVector[0] = h;
+                        returnVector[1] = w;
+                        returnVector[2] = -1;
                     }
                 }
                 catch (Exception e)
                 {
-                    vars[0] = orig_h;
-                    vars[1] = orig_w;
-                    vars[2] = -1;
+                    returnVector[0] = orig_h;
+                    returnVector[1] = orig_w;
+                    returnVector[2] = -1;
                 }
-                return vars;
+                return returnVector;
             }
             else
             {//Slip to right/below intended move
@@ -1052,26 +1066,26 @@ namespace IC_ML_MazeSolver
 
                 try
                 {
-                    if (map.tiles[h, w].type == 3)
+                    if (map.tiles[h, w].isHole)
                     {
-                        vars[0] = orig_h;
-                        vars[1] = orig_w;
-                        vars[2] = -100;
+                        returnVector[0] = orig_h;
+                        returnVector[1] = orig_w;
+                        returnVector[2] = -100;
                     }
                     else
                     {
-                        vars[0] = h;
-                        vars[1] = w;
-                        vars[2] = -1;
+                        returnVector[0] = h;
+                        returnVector[1] = w;
+                        returnVector[2] = -1;
                     }
                 }
                 catch (Exception e)
                 {
-                    vars[0] = orig_h;
-                    vars[1] = orig_w;
-                    vars[2] = -1;
+                    returnVector[0] = orig_h;
+                    returnVector[1] = orig_w;
+                    returnVector[2] = -1;
                 }
-                return vars;
+                return returnVector;
             }
         }
 
@@ -1103,16 +1117,21 @@ namespace IC_ML_MazeSolver
                 w++;
             }
 
-            try
+            if ((h >= 0 && h < map.height) && (w >= 0 && w < map.width))
             {
-                if (map.actions[h, w] == 'H')
+                if (map.tiles[h, w].isHole)
+                {
                     return -1;
+                }
+                else
+                {
+                    return 1;
+                }
             }
-            catch (Exception e)
+            else
             {
                 return -2;
             }
-            return 1;
         }
 
         /*
@@ -1151,7 +1170,6 @@ namespace IC_ML_MazeSolver
          */
         private char getRandomActionByState(int h, int w)
         {
-            Random rnd = new Random(DateTime.Now.Millisecond);
             int R = (int)(rnd.NextDouble() * 4);
             if (R == 0)
                 return 'U';
@@ -1191,34 +1209,5 @@ namespace IC_ML_MazeSolver
             return dict;
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
