@@ -14,6 +14,8 @@ namespace IC_ML_MazeSolver
         public Tile[,] tiles { get; set; }
         public char[,] actions { get; set; }
 
+        Random rnd = new Random(DateTime.Now.Millisecond);
+
         public Map()
         {
             tiles = null;
@@ -23,7 +25,6 @@ namespace IC_ML_MazeSolver
         public void initActions()
         {
             actions = new char[height, width];
-            Random rnd = new Random(DateTime.Now.Millisecond);
             for (int x = 0; x < height; x++)
             {
                 for (int y = 0; y < width; y++)

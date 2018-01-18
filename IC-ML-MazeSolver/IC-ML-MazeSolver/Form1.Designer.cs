@@ -52,6 +52,7 @@
             this.pgbEpisodeNum = new System.Windows.Forms.ProgressBar();
             this.lblEpisodeProgress = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.btnReset = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -296,6 +297,7 @@
             // 
             this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel3.Controls.Add(this.btnReset);
             this.panel3.Controls.Add(this.txtFile);
             this.panel3.Controls.Add(this.btnStart);
             this.panel3.Controls.Add(this.txtHeight);
@@ -311,6 +313,16 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(190, 885);
             this.panel3.TabIndex = 22;
+            // 
+            // btnReset
+            // 
+            this.btnReset.Location = new System.Drawing.Point(5, 535);
+            this.btnReset.Name = "btnReset";
+            this.btnReset.Size = new System.Drawing.Size(180, 40);
+            this.btnReset.TabIndex = 19;
+            this.btnReset.Text = "Reset";
+            this.btnReset.UseVisualStyleBackColor = true;
+            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
             // 
             // frmMazeSolver
             // 
@@ -358,6 +370,7 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox txtReductionConstant;
+        private System.Windows.Forms.Button btnReset;
     }
 }
 
