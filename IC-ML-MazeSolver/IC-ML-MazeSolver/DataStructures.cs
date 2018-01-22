@@ -39,8 +39,10 @@ namespace IC_ML_MazeSolver
             readMapData(filename);
         }
 
-        public void initState(int totalEpisodesToRun, double reductionConstant)
+        public void initState(int EpisodesToRun, double rConstant)
         {
+            totalEpisodesToRun = EpisodesToRun;
+            reductionConstant = rConstant;
             //BUILD OTHER DATA STRUCTURES
             maxSteps = map.height * map.width * 3;
             stateAction = initDictonary();
@@ -130,6 +132,22 @@ namespace IC_ML_MazeSolver
             newMap.randomizeActions();
             this.map = newMap;
         }
+
+        public void resetMapData()
+        {
+            //RANDOMIZES MAP ACTIONS
+            map.randomizeActions();
+
+            //CLEAR OUT LEARNED ACTIONS
+            if (stateAction != null || elgStateAction != null)
+            {
+                stateAction.Clear();
+                elgStateAction.Clear();
+            }
+            stateAction = initDictonary();
+            elgStateAction = initDictonary();
+        }
+
 
         /*
          * initDictonary

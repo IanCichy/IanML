@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using static IC_ML_MazeSolver.DataStructures;
+using System.Threading;
 
 namespace IC_ML_MazeSolver
 {
@@ -87,53 +88,42 @@ namespace IC_ML_MazeSolver
         /// <param name="e"></param>
         private void btnReset_Click(object sender, EventArgs e)
         {
-            ////RANDOMIZES MAP ACTIONS
-            //map.randomizeActions();
-
-            ////CLEAR OUT LEARNED ACTIONS
-            //if (stateAction != null || elgStateAction != null)
-            //{
-            //    stateAction.Clear();
-            //    elgStateAction.Clear();
-            //}
-            //stateAction = initDictonary();
-            //elgStateAction = initDictonary();
-
-            ////RE-DRAW THE ORIGINAL MAP
-            //resetFrame();
+            data.resetMapData();
+            //RE-DRAW THE ORIGINAL MAP
+            resetFrame(data.map);
         }
 
         /// <summary>
         /// Resets the frame and re-draws the map back to the original state
         /// </summary>
-        private void resetFrame()
+        private void resetFrame(Map map)
         {
-            //for (int x = 0; x < map.height; x++)
-            //{
-            //    for (int y = 0; y < map.width; y++)
-            //    {
-            //        map.tiles[x, y].btn.Text = "";
-            //        if (map.tiles[x, y].type == Tiles.Open)
-            //        {
-            //            map.tiles[x, y].btn.BackColor = System.Drawing.Color.White;
-            //        }
-            //        else if (map.tiles[x, y].type == Tiles.Icy)
-            //        {
-            //            map.tiles[x, y].btn.BackColor = System.Drawing.Color.Cyan;
-            //        }
-            //        else if (map.tiles[x, y].type == Tiles.Start)
-            //        {
-            //            map.tiles[x, y].btn.Text = "S";
-            //            map.tiles[x, y].btn.BackColor = System.Drawing.Color.Violet;
-            //        }
-            //        else if (map.tiles[x, y].type == Tiles.Goal)
-            //        {
-            //            map.tiles[x, y].btn.Text = "G";
-            //            map.tiles[x, y].btn.BackColor = System.Drawing.Color.Orange;
-            //        }
-            //    }
-            //}
-            //this.Refresh();
+            for (int x = 0; x < map.height; x++)
+            {
+                for (int y = 0; y < map.width; y++)
+                {
+                    map.tiles[x, y].btn.Text = "";
+                    if (map.tiles[x, y].Type == Tiles.Open)
+                    {
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.White;
+                    }
+                    else if (map.tiles[x, y].Type == Tiles.Icy)
+                    {
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.Cyan;
+                    }
+                    else if (map.tiles[x, y].Type == Tiles.Start)
+                    {
+                        map.tiles[x, y].btn.Text = "S";
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.Violet;
+                    }
+                    else if (map.tiles[x, y].Type == Tiles.Goal)
+                    {
+                        map.tiles[x, y].btn.Text = "G";
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.Orange;
+                    }
+                }
+            }
+            this.Refresh();
         }
 
         /// <summary>
@@ -157,9 +147,12 @@ namespace IC_ML_MazeSolver
 
             if (rbtnQLearning.Checked)
             {
-                AlgQLearning learner = new AlgQLearning();
-                var t = Task.Run(() => learner.Learn(data, totalEpisodesToRun, reductionConstant));
-                t.Wait();
+                 AlgQLearning learner = new AlgQLearning();
+                 var t = Task.Run(() => learner.Learn(data, totalEpisodesToRun, reductionConstant));
+                 t.Wait();
+                //Thread t = new Thread(() => learner.Learn(data, totalEpisodesToRun, reductionConstant));
+                //t.Start();
+                
             }
             else if (rbtnSarsa.Checked)
             {
