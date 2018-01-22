@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static IC_ML_MazeSolver.frmMazeSolver;
+using static IC_ML_MazeSolver.DataStructures;
 
 namespace IC_ML_MazeSolver
 {

@@ -45,8 +45,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.txtEpisodesToRun = new System.Windows.Forms.TextBox();
             this.tlpMaze = new System.Windows.Forms.TableLayoutPanel();
-            this.pgbEpisodeNum = new System.Windows.Forms.ProgressBar();
-            this.lblEpisodeProgress = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.btnReset = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
@@ -233,24 +231,6 @@
             this.tlpMaze.Size = new System.Drawing.Size(1036, 885);
             this.tlpMaze.TabIndex = 15;
             // 
-            // pgbEpisodeNum
-            // 
-            this.pgbEpisodeNum.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pgbEpisodeNum.Location = new System.Drawing.Point(5, 281);
-            this.pgbEpisodeNum.Name = "pgbEpisodeNum";
-            this.pgbEpisodeNum.Size = new System.Drawing.Size(180, 23);
-            this.pgbEpisodeNum.TabIndex = 16;
-            // 
-            // lblEpisodeProgress
-            // 
-            this.lblEpisodeProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblEpisodeProgress.AutoSize = true;
-            this.lblEpisodeProgress.BackColor = System.Drawing.Color.Transparent;
-            this.lblEpisodeProgress.Location = new System.Drawing.Point(92, 285);
-            this.lblEpisodeProgress.Name = "lblEpisodeProgress";
-            this.lblEpisodeProgress.Size = new System.Drawing.Size(0, 13);
-            this.lblEpisodeProgress.TabIndex = 18;
-            // 
             // panel3
             // 
             this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -258,8 +238,6 @@
             this.panel3.Controls.Add(this.btnReset);
             this.panel3.Controls.Add(this.txtFile);
             this.panel3.Controls.Add(this.btnStart);
-            this.panel3.Controls.Add(this.lblEpisodeProgress);
-            this.panel3.Controls.Add(this.pgbEpisodeNum);
             this.panel3.Controls.Add(this.panel1);
             this.panel3.Controls.Add(this.btnFile);
             this.panel3.Controls.Add(this.panel2);
@@ -312,8 +290,6 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TableLayoutPanel tlpMaze;
-        private System.Windows.Forms.ProgressBar pgbEpisodeNum;
-        private System.Windows.Forms.Label lblEpisodeProgress;
         private System.Windows.Forms.TextBox txtEpisodesToRun;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox chkAnimateGUI;

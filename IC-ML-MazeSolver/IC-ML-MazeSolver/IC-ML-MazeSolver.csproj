@@ -46,9 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Alg_QLearning.cs" />
-    <Compile Include="Alg_SARSA.cs" />
-    <Compile Include="Alg_SARSAEligibility.cs" />
+    <Compile Include="AlgQLearning.cs" />
     <Compile Include="DataStructures.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

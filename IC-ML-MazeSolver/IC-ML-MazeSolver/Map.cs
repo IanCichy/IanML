@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static IC_ML_MazeSolver.frmMazeSolver;
+using static IC_ML_MazeSolver.DataStructures;
 
 namespace IC_ML_MazeSolver
 {
@@ -27,11 +27,11 @@ namespace IC_ML_MazeSolver
             {
                 for (int y = 0; y < width; y++)
                 {
-                    if (tiles[x, y].type == Tiles.Hole)
-                        tiles[x, y].action = Actions.NONE;
+                    if (tiles[x, y].Type == Tiles.Hole)
+                        tiles[x, y].Action = Actions.NONE;
                     else
                     {
-                        tiles[x, y].action = getRandomAction();
+                        tiles[x, y].Action = getRandomAction();
                     }
                 }
             }
