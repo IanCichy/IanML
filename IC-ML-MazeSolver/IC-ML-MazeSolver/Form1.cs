@@ -39,14 +39,12 @@ namespace IC_ML_MazeSolver
             openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = true;
-
+        
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                //SET FILE NAME
                 txtFile.Text = openFileDialog1.FileName;
                 data = new DataStructures(txtFile.Text);
                 buildFrame(data.map);
-
             }
         }
 
@@ -139,7 +137,7 @@ namespace IC_ML_MazeSolver
             }
         }
 
-        private void btnStart_Click(object sender, EventArgs e)
+        private async void btnStart_Click(object sender, EventArgs e)
         {
             gui = chkAnimateGUI.Checked;
             int totalEpisodesToRun = int.Parse(txtEpisodesToRun.Text.ToString());
@@ -148,24 +146,19 @@ namespace IC_ML_MazeSolver
             if (rbtnQLearning.Checked)
             {
                  AlgQLearning learner = new AlgQLearning();
-                 var t = Task.Run(() => learner.Learn(data, totalEpisodesToRun, reductionConstant));
-                 t.Wait();
-                //Thread t = new Thread(() => learner.Learn(data, totalEpisodesToRun, reductionConstant));
-                //t.Start();
-                
+                 await Task.Run(() => learner.Learn(data, totalEpisodesToRun, reductionConstant));              
             }
             else if (rbtnSarsa.Checked)
             {
-                //var t = Task.Run(() => SARSA_Learning(map));
-                //t.Wait();
-                //SARSA_Learning(map);
+                AlgSARSALearning learner = new AlgSARSALearning();
+                await Task.Run(() => learner.Learn(data, totalEpisodesToRun, reductionConstant));
             }
             else if (rbtnSarsaElg.Checked)
             {
 
             }
 
-            finalFrame();
+            DisplayResults();
         }
 
         /*
@@ -195,7 +188,7 @@ namespace IC_ML_MazeSolver
          * Pre: JFrame
          * Post: A visible window with the final map displayed
          */
-        private void finalFrame()
+        private void DisplayResults()
         {
             Map map = data.map;
 

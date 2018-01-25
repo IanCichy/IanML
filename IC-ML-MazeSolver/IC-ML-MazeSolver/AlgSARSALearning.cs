@@ -7,11 +7,11 @@ using static IC_ML_MazeSolver.DataStructures;
 
 namespace IC_ML_MazeSolver
 {
-    public class AlgQLearning
+    class AlgSARSALearning
     {
         DataStructures data;
 
-        public AlgQLearning()
+        public AlgSARSALearning()
         {
 
         }
@@ -70,15 +70,8 @@ namespace IC_ML_MazeSolver
 
                     double stepReward = -1.0;
 
-                    //Set next action a', chosen E-greedily based on Q(s',a')
-                    double r = data.rndNumGen.NextDouble();
-                    if (r <= data.epsilon)
-                        stepAction = data.getRandomAction();//choose random action
-                    else
-                        stepAction = data.getBestActionByState(h, w);//choose best action
-                    M.tiles[h, w].Action = stepAction;
-
-                    State s = new State(h, w, stepAction);
+                    Actions currA = M.tiles[h, w].Action;
+                    State s = new State(h, w, currA);
                     double currR = data.stateAction[s];
 
                     //Take Action A
@@ -91,15 +84,22 @@ namespace IC_ML_MazeSolver
                     w = returnVector[1];
                     stepReward = returnVector[2];
 
-                    //find Max Q(s',a')
-                    Actions t = data.getBestActionByState(h, w);
-                    double maxR = data.stateAction[(new State(h, w, t))];
+                    //Observe next state s' and one step reward
+                    Actions newA = M.tiles[h, w].Action;
+                    double newR = data.stateAction[new State(h, w, newA)];
 
-                    double e = currR + data.alpha * (stepReward + data.lambda * (maxR - currR));
+                    ////Set next action a', chosen E-greedily based on Q(s',a')
+                    double r = data.rndNumGen.NextDouble();
+                    if (r <= data.epsilon)
+                        stepAction = data.getRandomAction();//choose random action
+                    else
+                        stepAction = data.getBestActionByState(h, w);//choose best action
+
+                    double e = currR + data.alpha * (stepReward + data.gamma * (newR - currR));
                     data.stateAction[s] = e;
+                    M.tiles[h, w].Action = stepAction;
                 }
             }
         }
-
     }
 }
