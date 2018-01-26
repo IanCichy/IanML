@@ -47,7 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlgQLearning.cs" />
-    <Compile Include="AlgSARSAElgLearning.cs" />
     <Compile Include="AlgSARSALearning.cs" />
     <Compile Include="DataStructures.cs" />
     <Compile Include="Form1.cs">

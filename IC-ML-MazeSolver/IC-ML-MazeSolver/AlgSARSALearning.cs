@@ -16,7 +16,7 @@ namespace IC_ML_MazeSolver
 
         }
 
-        public async void Learn(DataStructures dat, int totalEpisodesToRun, double reductionConstant)
+        public async void Learn(DataStructures dat, int totalEpisodesToRun, double reductionConstant, bool gui)
         {
             data = dat;
             dat.initState(totalEpisodesToRun, reductionConstant);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -146,6 +147,63 @@ namespace IC_ML_MazeSolver
             }
             stateAction = initDictonary();
             elgStateAction = initDictonary();
+        }
+
+
+
+
+
+       /*
+         * UpdateFrame 
+         *  - Updates the window with the current position of the agent and its past moves
+         *  - Used only if GUI was set to 1 in input phase
+         * Pre: JFrame, position of agent in map
+         * Post: A visible window with the map displayed and the agents position highlighted
+         */
+        public void updateFrame(int x, int y, int prex, int prey)
+        {
+            foreach (Tuple<int, int> t in previousLocations)
+            {
+                Color c = Color.FromArgb((map.tiles[t.Item1, t.Item2].btn.BackColor.R) != 255 ? 255 : 255,
+                    (map.tiles[t.Item1, t.Item2].btn.BackColor.G) < 220 ? (map.tiles[t.Item1, t.Item2].btn.BackColor.G) + 1 : 220,
+                    (map.tiles[t.Item1, t.Item2].btn.BackColor.B) < 220 ? (map.tiles[t.Item1, t.Item2].btn.BackColor.B) + 1 : 220);
+                map.tiles[t.Item1, t.Item2].btn.BackColor = c;
+            }
+            map.tiles[prex, prey].btn.BackColor = Color.FromArgb(50, 50, 50);
+
+            //Refresh();
+        }
+
+        /// <summary>
+        /// Resets the frame and re-draws the map back to the original state
+        /// </summary>
+        public void resetFrame(Map map)
+        {
+            for (int x = 0; x < map.height; x++)
+            {
+                for (int y = 0; y < map.width; y++)
+                {
+                    map.tiles[x, y].btn.Text = "";
+                    if (map.tiles[x, y].Type == Tiles.Open)
+                    {
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.White;
+                    }
+                    else if (map.tiles[x, y].Type == Tiles.Icy)
+                    {
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.Cyan;
+                    }
+                    else if (map.tiles[x, y].Type == Tiles.Start)
+                    {
+                        map.tiles[x, y].btn.Text = "S";
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.Violet;
+                    }
+                    else if (map.tiles[x, y].Type == Tiles.Goal)
+                    {
+                        map.tiles[x, y].btn.Text = "G";
+                        map.tiles[x, y].btn.BackColor = System.Drawing.Color.Orange;
+                    }
+                }
+            }
         }
 
 

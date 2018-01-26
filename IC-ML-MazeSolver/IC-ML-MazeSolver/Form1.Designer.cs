@@ -31,7 +31,6 @@
             this.btnStart = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label4 = new System.Windows.Forms.Label();
-            this.rbtnSarsaElg = new System.Windows.Forms.RadioButton();
             this.rbtnSarsa = new System.Windows.Forms.RadioButton();
             this.rbtnQLearning = new System.Windows.Forms.RadioButton();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -67,7 +66,6 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.Controls.Add(this.label4);
-            this.panel1.Controls.Add(this.rbtnSarsaElg);
             this.panel1.Controls.Add(this.rbtnSarsa);
             this.panel1.Controls.Add(this.rbtnQLearning);
             this.panel1.Location = new System.Drawing.Point(5, 60);
@@ -83,17 +81,6 @@
             this.label4.Size = new System.Drawing.Size(50, 13);
             this.label4.TabIndex = 4;
             this.label4.Text = "Algorithm";
-            // 
-            // rbtnSarsaElg
-            // 
-            this.rbtnSarsaElg.AutoSize = true;
-            this.rbtnSarsaElg.Location = new System.Drawing.Point(15, 67);
-            this.rbtnSarsaElg.Name = "rbtnSarsaElg";
-            this.rbtnSarsaElg.Size = new System.Drawing.Size(155, 17);
-            this.rbtnSarsaElg.TabIndex = 2;
-            this.rbtnSarsaElg.TabStop = true;
-            this.rbtnSarsaElg.Text = "SARSA w/ Eligibility Traces";
-            this.rbtnSarsaElg.UseVisualStyleBackColor = true;
             // 
             // rbtnSarsa
             // 
@@ -280,7 +267,6 @@
         #endregion
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.RadioButton rbtnSarsaElg;
         private System.Windows.Forms.RadioButton rbtnSarsa;
         private System.Windows.Forms.RadioButton rbtnQLearning;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;

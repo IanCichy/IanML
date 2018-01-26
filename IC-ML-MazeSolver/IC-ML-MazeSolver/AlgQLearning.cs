@@ -16,22 +16,22 @@ namespace IC_ML_MazeSolver
 
         }
 
-        public async void Learn(DataStructures dat, int totalEpisodesToRun, double reductionConstant)
+        public async void Learn(DataStructures dat, int totalEpisodesToRun, double reductionConstant, bool gui)
         {
             data = dat;
             dat.initState(totalEpisodesToRun, reductionConstant);
-            Q_Learning(data.map);
+            Q_Learning(data.map, gui);
         }
 
-        public void Q_Learning(Map M)
+        public void Q_Learning(Map M, bool gui)
         {
             bool icy = false;
             for (int currentEpisodeNumber = 0; currentEpisodeNumber < data.totalEpisodesToRun; currentEpisodeNumber++)
             {
-                //if (gui)
-                //{
-                //    previousLocations.Clear();
-                //}
+                if (gui)
+                {
+                    data.previousLocations.Clear();
+                }
                 //lblEpisodeProgress.Text = (currentEpisodeNumber + 1) + "/" + totalEpisodesToRun;
                 //pgbEpisodeNum.Value = currentEpisodeNumber + 1;
 
@@ -42,25 +42,25 @@ namespace IC_ML_MazeSolver
                 Actions stepAction;
                 data.epsilon = data.calcuateReductionConstant(currentEpisodeNumber, data.epsilon);
 
-                //OPTINAL GUI INTERFACE
-                //if (gui)
-                //    resetFrame();
+                ////OPTINAL GUI INTERFACE
+                if (gui)
+                    data.resetFrame(M);
 
                 while ((!(w == data.GOALW && h == data.GOALH)))
                 {
                     data.stepCount++;
                     icy = false;
 
-                    //if (gui)
-                    //{
-                    //    previousLocations.Add(new Tuple<int, int>(h, w));
-                    //}
+                    if (gui)
+                    {
+                        data.previousLocations.Add(new Tuple<int, int>(h, w));
+                    }
 
                     prew = w;
                     preh = h;
-                    //OPTINAL GUI INTERFACE
-                    //if (gui)
-                    //    updateFrame(h, w, preh, prew);
+                    ////OPTINAL GUI INTERFACE
+                    if (gui)
+                        data.updateFrame(h, w, preh, prew);
 
                     //addded step limit
                     if (data.stepCount > data.maxSteps)
