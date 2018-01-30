@@ -39,10 +39,12 @@ namespace IC_ML_MazeSolver
             openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = true;
-        
+
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 txtFile.Text = openFileDialog1.FileName;
+                //Create the DataStructures object that holds all the map and
+                //training data
                 data = new DataStructures(txtFile.Text);
                 buildFrame(data.map);
             }
@@ -74,7 +76,6 @@ namespace IC_ML_MazeSolver
                     tlpMaze.Controls.Add(map.tiles[x, y].btn, y, x);
                 }
             }
-
             //REFRESH THE FRAME
             this.Refresh();
         }
@@ -87,11 +88,8 @@ namespace IC_ML_MazeSolver
         private void btnReset_Click(object sender, EventArgs e)
         {
             data.resetMapData();
-            //RE-DRAW THE ORIGINAL MAP
             data.resetFrame(data.map);
         }
-
-
 
         /// <summary>
         /// Redraws the frame to fit the new size
@@ -122,11 +120,8 @@ namespace IC_ML_MazeSolver
                 AlgSARSALearning learner = new AlgSARSALearning();
                 await Task.Run(() => learner.Learn(data, totalEpisodesToRun, reductionConstant, gui));
             }
-
             DisplayResults();
         }
-
-
 
         /*
          * FinalFrame 
@@ -169,7 +164,6 @@ namespace IC_ML_MazeSolver
             map.tiles[data.STARTH, data.STARTW].btn.BackColor = System.Drawing.Color.Violet;
             this.Refresh();
         }
-
     }
 }
 

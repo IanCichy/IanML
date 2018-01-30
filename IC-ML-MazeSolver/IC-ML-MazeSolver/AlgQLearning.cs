@@ -32,6 +32,7 @@ namespace IC_ML_MazeSolver
                 {
                     data.previousLocations.Clear();
                 }
+
                 //lblEpisodeProgress.Text = (currentEpisodeNumber + 1) + "/" + totalEpisodesToRun;
                 //pgbEpisodeNum.Value = currentEpisodeNumber + 1;
 
@@ -100,6 +101,5 @@ namespace IC_ML_MazeSolver
                 }
             }
         }
-
     }
 }

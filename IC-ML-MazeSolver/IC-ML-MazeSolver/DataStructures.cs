@@ -18,7 +18,6 @@ namespace IC_ML_MazeSolver
         public int stepCount = 0, maxSteps = 0, totalEpisodesToRun = 2000;
         //Dictionaries	
         public Dictionary<State, Double> stateAction;
-        public Dictionary<State, Double> elgStateAction;
         public List<Tuple<int, int>> previousLocations = new List<Tuple<int, int>>();
         //Tile Data
         public enum Tiles { Start, Goal, Open, Hole, Icy };
@@ -34,7 +33,6 @@ namespace IC_ML_MazeSolver
         //RandomNumberGen
         public Random rndNumGen = new Random(DateTime.Now.Millisecond);
 
-
         public DataStructures(string filename)
         {
             readMapData(filename);
@@ -47,9 +45,7 @@ namespace IC_ML_MazeSolver
             //BUILD OTHER DATA STRUCTURES
             maxSteps = map.height * map.width * 3;
             stateAction = initDictonary();
-            elgStateAction = initDictonary();
         }
-
 
         /// <summary>
         /// Reads in the map data and initalizes the environment
@@ -130,28 +126,22 @@ namespace IC_ML_MazeSolver
                 Console.Error.Write(e);
             }
             newMap.tiles = map;
-            newMap.randomizeActions();
+            newMap.Reset();
             this.map = newMap;
         }
 
         public void resetMapData()
         {
             //RANDOMIZES MAP ACTIONS
-            map.randomizeActions();
+            map.Reset();
 
             //CLEAR OUT LEARNED ACTIONS
-            if (stateAction != null || elgStateAction != null)
+            if (stateAction != null)
             {
                 stateAction.Clear();
-                elgStateAction.Clear();
             }
             stateAction = initDictonary();
-            elgStateAction = initDictonary();
         }
-
-
-
-
 
        /*
          * UpdateFrame 
@@ -205,7 +195,6 @@ namespace IC_ML_MazeSolver
                 }
             }
         }
-
 
         /*
          * initDictonary

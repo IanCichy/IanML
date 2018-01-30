@@ -21,7 +21,7 @@ namespace IC_ML_MazeSolver
 
         }
 
-        public void randomizeActions()
+        public void Reset()
         {
             for (int x = 0; x < height; x++)
             {
@@ -60,6 +60,5 @@ namespace IC_ML_MazeSolver
             //Default - should never happen
             return Actions.NONE;
         }
-
     }
 }
