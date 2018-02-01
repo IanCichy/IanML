@@ -16,14 +16,14 @@ namespace IC_ML_MazeSolver
 
         }
 
-        public async void Learn(DataStructures dat, int totalEpisodesToRun, double reductionConstant, bool gui)
+        public async void Learn(DataStructures dat, int totalEpisodesToRun, double reductionConstant, bool gui, frmMazeSolver c)
         {
             data = dat;
             dat.initState(totalEpisodesToRun, reductionConstant);
-            Q_Learning(data.map, gui);
+            Q_Learning(data.map, gui, c);
         }
 
-        public void Q_Learning(Map M, bool gui)
+        public void Q_Learning(Map M, bool gui, frmMazeSolver form)
         {
             bool icy = false;
             for (int currentEpisodeNumber = 0; currentEpisodeNumber < data.totalEpisodesToRun; currentEpisodeNumber++)
@@ -60,9 +60,10 @@ namespace IC_ML_MazeSolver
                     prew = w;
                     preh = h;
                     ////OPTINAL GUI INTERFACE
-                    if (gui)
+                    if (gui) {
                         data.updateFrame(h, w, preh, prew);
-
+                        form.Refresh();
+                    }
                     //addded step limit
                     if (data.stepCount > data.maxSteps)
                     {

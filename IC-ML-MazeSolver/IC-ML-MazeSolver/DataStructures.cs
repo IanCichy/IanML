@@ -143,13 +143,13 @@ namespace IC_ML_MazeSolver
             stateAction = initDictonary();
         }
 
-       /*
-         * UpdateFrame 
-         *  - Updates the window with the current position of the agent and its past moves
-         *  - Used only if GUI was set to 1 in input phase
-         * Pre: JFrame, position of agent in map
-         * Post: A visible window with the map displayed and the agents position highlighted
-         */
+        /*
+          * UpdateFrame 
+          *  - Updates the window with the current position of the agent and its past moves
+          *  - Used only if GUI was set to 1 in input phase
+          * Pre: JFrame, position of agent in map
+          * Post: A visible window with the map displayed and the agents position highlighted
+          */
         public void updateFrame(int x, int y, int prex, int prey)
         {
             foreach (Tuple<int, int> t in previousLocations)
@@ -161,7 +161,7 @@ namespace IC_ML_MazeSolver
             }
             map.tiles[prex, prey].btn.BackColor = Color.FromArgb(50, 50, 50);
 
-            //Refresh();
+            //this.Refresh();
         }
 
         /// <summary>

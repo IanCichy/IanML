@@ -19,6 +19,8 @@ namespace IC_ML_MazeSolver
         private bool gui = false;
         DataStructures data;
 
+        public bool doGUI = false;
+
         /// <summary>
         /// Init Method called by Frame launching
         /// </summary>
@@ -113,7 +115,15 @@ namespace IC_ML_MazeSolver
             if (rbtnQLearning.Checked)
             {
                 AlgQLearning learner = new AlgQLearning();
-                await Task.Run(() => learner.Learn(data, totalEpisodesToRun, reductionConstant, gui));
+                if (gui)
+                {
+                    learner.Learn(data, totalEpisodesToRun, reductionConstant, gui, this);
+                }
+                else
+                {
+                    //AlgQLearning learner = new AlgQLearning();
+                    await Task.Run(() => learner.Learn(data, totalEpisodesToRun, reductionConstant, gui, this));
+                }
             }
             else if (rbtnSarsa.Checked)
             {
@@ -164,6 +174,7 @@ namespace IC_ML_MazeSolver
             map.tiles[data.STARTH, data.STARTW].btn.BackColor = System.Drawing.Color.Violet;
             this.Refresh();
         }
+
     }
 }
 
